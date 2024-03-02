@@ -24,14 +24,14 @@ Stegasaurus as a program understands two command line parameters: an image file 
 
 For example, to hide a message:
 ```
-% python stega.py --file flower.png --message "I hope nobody realizes that I'm wearing dirty socks."
+% python stega.py --file flower.png --message "I hope nobody knows I'm wearing dirty socks."
 %
 ```
 
 And to extract a message:
 ```
-% python stega.py --file flower.png`
-I hope nobody realizes that I'm wearing dirty socks.
+% python stega.py --file flower.png
+I hope nobody knows I'm wearing dirty socks.
 %
 ```
 ### How to Import the Module
