@@ -112,58 +112,126 @@ class TestStega(unittest.TestCase):
             ])
         )
 
-        # self.assertEqual(
-        #     stega._hide_message(
-        #         [23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33, 232, 100, 203, 88, 254, 23, 104, 76],
-        #         [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0] #h e l
-        #     ),
-        #     [22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88, 255, 23, 104, 76]
-        # )
-
-        # self.assertEqual(
-        #     stega._extract_message(
-        #         [22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88, 255, 23, 104, 76]
-        #     ),
-        #     [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0] #h e l
-        # )
-        
-        # original_array = [
-        #     23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33, 232, 100, 203, 88,
-        #     254, 23, 104, 76, 23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33
-        # ]
-
-        # # Binary representation of "hello"
-        # binary_message = [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0,
-        #         0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1]
-
-        # # Expected transformed array after embedding the message
-        # expected_array = [
-        #     22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88,
-        #     255, 23, 104, 76, 22, 201, 102, 50, 1, 21, 24, 59, 99, 83, 78, 1, 32, 255, 0, 33
-        # ]
-
-        # # Test the function
-        # self.assertEqual(
-        #     stega._hide_message(original_array, binary_message),
-        #     expected_array
-        # )
-
-        # # Test the extraction function
-        # self.assertEqual(
-        #     stega._extract_message(expected_array),
-        #     binary_message
-        # )
+        self.assertEqual(
+            stega._hide_message(
+                [23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33, 232, 100, 203, 88, 254, 23, 104, 76],
+                [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0] #h e l
+            ),
+            [22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88, 255, 23, 104, 76]
+        )
 
         self.assertEqual(
+            stega._extract_message(
+                [22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88, 255, 23, 104, 76]
+            ),
+            [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0] #h e l
+        )
+
+        # this test shows _hide_message works as expected regarding 256 and beyond characters
+        self.assertEqual(
+            stega._hide_message(
+            stega._bytes_to_bit_array(b"\x00" * 64), # 512 bits
+            [0, 1] * 256 # 512 bits
+            ),
+            [0, 1] * 256
+        )
+
+        # shows _extract_message works as expected regarding 256 and beyond characters
+        self.assertEqual(
+            stega._extract_message(
+                stega._hide_message(
+                    stega._bytes_to_bit_array(b"\x00" * 64), # 512 bits
+                        [0, 1] * 256 # 512 bits
+                    )
+                ),
+            [0, 1] * 256
+        )
+        # error: overflow here and resets to "" 
+        self.assertEqual( 
             stega.extract_message(
                 stega.hide_message(
                     Image.open("flower.png"), 
-                    b"one two three four five"
+                    b"one two three four five six seve" # 256 bits (32 characters * 8 bits per character)
                 )
             ),
-            b"one two three four five"
+            b"one two three four five six seve"
         )
 
+        ### TESTS CREATED BY CHATGPT ### -- ALL OF THESE PASS
+        self.assertEqual(
+            stega._hide_message(
+            [255, 255, 255, 255, 255, 255, 255, 255],
+            [1, 0, 1, 0, 1, 0, 1, 0]
+            ),
+            [255, 254, 255, 254, 255, 254, 255, 254]
+        )
+
+        self.assertEqual(
+            stega._extract_message(
+            [255, 254, 255, 254, 255, 254, 255, 254]
+            ),
+            [1, 0, 1, 0, 1, 0, 1, 0]
+        )
+
+        self.assertEqual(
+            stega._hide_message(
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1]
+            ),
+            [1, 1, 1, 1, 1, 1, 1, 1]
+        )
+
+        self.assertEqual(
+            stega._extract_message(
+            [1, 1, 1, 1, 1, 1, 1, 1]
+            ),
+            [1, 1, 1, 1, 1, 1, 1, 1]
+        )
+
+        self.assertEqual(
+            stega._hide_message(
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+            ),
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        )
+
+        self.assertEqual(
+            stega._extract_message(
+            [0, 0, 0, 0, 0, 0, 0, 0]
+            ),
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        )
+
+        self.assertEqual(
+            stega._hide_message(
+            [23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33, 232, 100, 203, 88, 254, 23, 104, 76],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ),
+            [23, 201, 103, 51, 1, 21, 25, 59, 99, 83, 79, 1, 33, 255, 1, 33, 233, 101, 203, 89, 255, 23, 105, 77]
+        )
+
+        self.assertEqual(
+            stega._extract_message(
+            [23, 201, 103, 51, 1, 21, 25, 59, 99, 83, 79, 1, 33, 255, 1, 33, 233, 101, 203, 89, 255, 23, 105, 77]
+            ),
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        )
+
+        self.assertEqual(
+            stega._hide_message(
+            [23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33, 232, 100, 203, 88, 254, 23, 104, 76],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            ),
+            [22, 200, 102, 50, 0, 20, 24, 58, 98, 82, 78, 0, 32, 254, 0, 32, 232, 100, 202, 88, 254, 22, 104, 76]
+        )
+
+        self.assertEqual(
+            stega._extract_message(
+            [22, 200, 102, 50, 0, 20, 24, 58, 98, 82, 78, 0, 32, 254, 0, 32, 232, 100, 202, 88, 254, 22, 104, 76]
+            ),
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        )
 
 if __name__ == "__main__":
     unittest.main()
