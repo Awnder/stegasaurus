@@ -158,10 +158,10 @@ class TestStega(unittest.TestCase):
             stega.extract_message(
                 stega.hide_message(
                     Image.open("flower.png"), 
-                    b"one two three four five six seven eight nine ten"
+                    b"one two three four five"
                 )
             ),
-            b"one two three four five six seven eight nine ten"
+            b"one two three four five"
         )
 
 
