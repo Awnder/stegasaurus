@@ -112,46 +112,56 @@ class TestStega(unittest.TestCase):
             ])
         )
 
-        self.assertEqual(
-            stega._hide_message(
-                [23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33, 232, 100, 203, 88, 254, 23, 104, 76],
-                [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0] #h e l
-            ),
-            [22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88, 255, 23, 104, 76]
-        )
+        # self.assertEqual(
+        #     stega._hide_message(
+        #         [23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33, 232, 100, 203, 88, 254, 23, 104, 76],
+        #         [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0] #h e l
+        #     ),
+        #     [22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88, 255, 23, 104, 76]
+        # )
 
-        self.assertEqual(
-            stega._extract_message(
-                [22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88, 255, 23, 104, 76]
-            ),
-            [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0] #h e l
-        )
+        # self.assertEqual(
+        #     stega._extract_message(
+        #         [22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88, 255, 23, 104, 76]
+        #     ),
+        #     [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0] #h e l
+        # )
         
-        original_array = [
-            23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33, 232, 100, 203, 88,
-            254, 23, 104, 76, 23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33
-        ]
+        # original_array = [
+        #     23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33, 232, 100, 203, 88,
+        #     254, 23, 104, 76, 23, 200, 102, 50, 0, 21, 24, 59, 99, 83, 79, 1, 32, 255, 0, 33
+        # ]
 
-        # Binary representation of "hello"
-        binary_message = [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0,
-                0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1]
+        # # Binary representation of "hello"
+        # binary_message = [0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0,
+        #         0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1]
 
-        # Expected transformed array after embedding the message
-        expected_array = [
-            22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88,
-            255, 23, 104, 76, 22, 201, 102, 50, 1, 21, 24, 59, 99, 83, 78, 1, 32, 255, 0, 33
-        ]
+        # # Expected transformed array after embedding the message
+        # expected_array = [
+        #     22, 201, 103, 50, 1, 20, 24, 58, 98, 83, 79, 0, 32, 255, 0, 33, 232, 101, 203, 88,
+        #     255, 23, 104, 76, 22, 201, 102, 50, 1, 21, 24, 59, 99, 83, 78, 1, 32, 255, 0, 33
+        # ]
 
-        # Test the function
+        # # Test the function
+        # self.assertEqual(
+        #     stega._hide_message(original_array, binary_message),
+        #     expected_array
+        # )
+
+        # # Test the extraction function
+        # self.assertEqual(
+        #     stega._extract_message(expected_array),
+        #     binary_message
+        # )
+
         self.assertEqual(
-            stega._hide_message(original_array, binary_message),
-            expected_array
-        )
-
-        # Test the extraction function
-        self.assertEqual(
-            stega._extract_message(expected_array),
-            binary_message
+            stega.extract_message(
+                stega.hide_message(
+                    Image.open("flower.png"), 
+                    b"one two three four five six seven eight nine ten"
+                )
+            ),
+            b"one two three four five six seven eight nine ten"
         )
 
 
